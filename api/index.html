@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Disease Detection</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    h1 { color: green; }
+    .preview { margin-top: 20px; }
+    img { max-width: 300px; margin-top: 10px; }
+    .result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🌱 Plant Disease Detector</h1>
+
+  <input type="file" id="fileInput" />
+  <button onclick="uploadImage()">Predict</button>
+
+  <div class="preview">
+    <p>Preview:</p>
+    <img id="preview" src="#" alt="No image chosen" />
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+    const resultDiv = document.getElementById("result");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+      }
+    });
+
+    async function uploadImage() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select an image first!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      resultDiv.innerHTML = "⏳ Predicting...";
+
+      const response = await fetch("https://potato-disease-api.onrender.com/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      resultDiv.innerHTML = `✅ Class: ${data.class} <br> 🔎 Confidence: ${data.confidence.toFixed(2)}%`;
+    }
+  </script>
+</body>
+</html>
